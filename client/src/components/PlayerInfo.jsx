@@ -1,4 +1,4 @@
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import styles from '../styles';
 
 const healthPoints = 25;
@@ -41,7 +41,7 @@ const PlayerInfo = ({ player, playerIcon, mt }) => (
       {player.mana || 0}
     </div>
 
-    <ReactTooltip
+    <Tooltip
       id={`Player-${mt ? '1' : '2'}`}
       effect="solid"
       backgroundColor="#7f46f0"
@@ -54,13 +54,13 @@ const PlayerInfo = ({ player, playerIcon, mt }) => (
         <span className={styles.playerInfoSpan}>Address:</span>{' '}
         {player?.playerAddress?.slice(0, 10)}
       </p>
-    </ReactTooltip>
-    <ReactTooltip
+    </Tooltip>
+    <Tooltip
       id={`Health-${mt ? '1' : '2'}`}
       effect="solid"
       backgroundColor="#7f46f0"
     />
-    <ReactTooltip
+    <Tooltip
       id={`Mana-${mt ? '1' : '2'}`}
       effect="solid"
       backgroundColor="#7f46f0"
