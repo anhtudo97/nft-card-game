@@ -13,6 +13,7 @@ module.exports = {
   },
   plugins: ['react', 'prettier'],
   rules: {
+    'semi-style': ['error', 'last'],
     'prettier/prettier': ['error'],
     'react/no-unescaped-entities': 0,
     'eslintreact/no-danger': 0,

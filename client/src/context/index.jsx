@@ -4,20 +4,20 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import { ethers } from 'ethers';
-import Web3Modal from 'web3modal';
-import { useNavigate } from 'react-router-dom';
+} from "react";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import { useNavigate } from "react-router-dom";
 
-import { GetParams } from '../utils/onboard.js';
-import { ABI, ADDRESS } from '../contract';
-import { createEventListeners } from './createEventListeners';
+import { GetParams } from "../utils/onboard.js";
+import { ABI, ADDRESS } from "../contract";
+import { createEventListeners } from "./createEventListeners";
 
 const GlobalContext = createContext();
 
 export const GlobalContextProvider = ({ children }) => {
-  const [walletAddress, setWalletAddress] = useState('');
-  const [battleGround, setBattleGround] = useState('bg-astral');
+  const [walletAddress, setWalletAddress] = useState("");
+  const [battleGround, setBattleGround] = useState("bg-astral");
   const [contract, setContract] = useState(null);
   const [provider, setProvider] = useState(null);
   const [step, setStep] = useState(1);
@@ -28,11 +28,11 @@ export const GlobalContextProvider = ({ children }) => {
   });
   const [showAlert, setShowAlert] = useState({
     status: false,
-    type: 'info',
-    message: '',
+    type: "info",
+    message: "",
   });
-  const [battleName, setBattleName] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [battleName, setBattleName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [updateGameData, setUpdateGameData] = useState(0);
 
   const player1Ref = useRef();
@@ -42,12 +42,12 @@ export const GlobalContextProvider = ({ children }) => {
 
   //* Set battleground to local storage
   useEffect(() => {
-    const isBattleground = localStorage.getItem('battleground');
+    const isBattleground = localStorage.getItem("battleground");
 
     if (isBattleground) {
       setBattleGround(isBattleground);
     } else {
-      localStorage.setItem('battleground', battleGround);
+      localStorage.setItem("battleground", battleGround);
     }
   }, []);
 
@@ -61,14 +61,14 @@ export const GlobalContextProvider = ({ children }) => {
 
     resetParams();
 
-    window?.ethereum?.on('chainChanged', () => resetParams());
-    window?.ethereum?.on('accountsChanged', () => resetParams());
+    window?.ethereum?.on("chainChanged", () => resetParams());
+    window?.ethereum?.on("accountsChanged", () => resetParams());
   }, []);
 
   //* Set the wallet address to the state
   const updateCurrentWalletAddress = async () => {
     const accounts = await window?.ethereum?.request({
-      method: 'eth_requestAccounts',
+      method: "eth_requestAccounts",
     });
 
     if (accounts) setWalletAddress(accounts[0]);
@@ -77,7 +77,7 @@ export const GlobalContextProvider = ({ children }) => {
   useEffect(() => {
     updateCurrentWalletAddress();
 
-    window?.ethereum?.on('accountsChanged', updateCurrentWalletAddress);
+    window?.ethereum?.on("accountsChanged", updateCurrentWalletAddress);
   }, []);
 
   //* Set the smart contract and provider to the state
@@ -85,11 +85,12 @@ export const GlobalContextProvider = ({ children }) => {
     const setSmartContractAndProvider = async () => {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
-      const newProvider = new ethers.providers.Web3Provider(connection);
-      const signer = newProvider.getSigner();
+      console.log(ethers.providers, connection);
+      const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = ethersProvider.getSigner();
       const newContract = new ethers.Contract(ADDRESS, ABI, signer);
 
-      setProvider(newProvider);
+      setProvider(ethersProvider);
       setContract(newContract);
     };
 
@@ -118,17 +119,17 @@ export const GlobalContextProvider = ({ children }) => {
       if (contract) {
         const fetchedBattles = await contract.getAllBattles();
         const pendingBattles = fetchedBattles.filter(
-          (battle) => battle.battleStatus === 0,
+          (battle) => battle.battleStatus === 0
         );
         let activeBattle = null;
 
         fetchedBattles.forEach((battle) => {
           if (
             battle.players.find(
-              (player) => player.toLowerCase() === walletAddress.toLowerCase(),
+              (player) => player.toLowerCase() === walletAddress.toLowerCase()
             )
           ) {
-            if (battle.winner.startsWith('0x00')) {
+            if (battle.winner.startsWith("0x00")) {
               activeBattle = battle;
             }
           }
@@ -145,7 +146,7 @@ export const GlobalContextProvider = ({ children }) => {
   useEffect(() => {
     if (showAlert?.status) {
       const timer = setTimeout(() => {
-        setShowAlert({ status: false, type: 'info', message: '' });
+        setShowAlert({ status: false, type: "info", message: "" });
       }, [5000]);
 
       return () => clearTimeout(timer);
@@ -156,13 +157,13 @@ export const GlobalContextProvider = ({ children }) => {
   useEffect(() => {
     if (errorMessage) {
       const parsedErrorMessage = errorMessage?.reason
-        ?.slice('execution reverted: '.length)
+        ?.slice("execution reverted: ".length)
         .slice(0, -1);
 
       if (parsedErrorMessage) {
         setShowAlert({
           status: true,
-          type: 'failure',
+          type: "failure",
           message: parsedErrorMessage,
         });
       }
